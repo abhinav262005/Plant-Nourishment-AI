@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Nourishment AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .container {
+            position: relative;
+            max-width: 550px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            animation: slideUp 0.8s ease-out;
+            z-index: 2;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #2a9d8f;
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 svg {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header p {
+            color: #52796f;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            opacity: 0.85;
+            font-style: italic;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+            animation: fadeInField 0.5s ease-out;
+            animation-fill-mode: backwards;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+        .form-group:nth-child(8) { animation-delay: 0.8s; }
+
+        @keyframes fadeInField {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        label {
+            display: block;
+            color: #2a9d8f;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #b7e4c7;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f0f7f0;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        input:focus, select:focus {
+            border-color: #2a9d8f;
+            box-shadow: 0 0 12px rgba(42, 157, 143, 0.3);
+            background: #fff;
+        }
+
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="%232a9d8f" viewBox="0 0 24 24"%3E%3Cpath d="M7 10l5 5 5-5z"/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 18px center;
+            background-size: 16px;
+        }
+
+        .error {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #2a9d8f, #95e1d3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 20px rgba(42, 157, 143, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(42, 157, 143, 0.6);
+        }
+
+        button:focus {
+            outline: 2px solid #2a9d8f;
+            outline-offset: 2px;
+        }
+
+        #recommendations {
+            margin-top: 35px;
+            padding: 25px;
+            background: linear-gradient(135deg, #e0f2e9, #b7e4c7);
+            border-radius: 15px;
+            display: none;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #recommendations.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #recommendations h2 {
+            font-size: 1.5rem;
+            color: #2a9d8f;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .recommendation-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .recommendation-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .recommendation-item svg {
+            flex-shrink: 0;
+            margin-top: 3px;
+            filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .recommendation-item span {
+            font-weight: 600;
+            color: #2a9d8f;
+        }
+
+        .recommendation-item p {
+            color: #354f52;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .leaf-decoration {
+            position: absolute;
+            pointer-events: none;
+            animation: float 5s infinite ease-in-out;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .leaf-decoration:nth-child(1) { top: -30px; left: -40px; transform: rotate(-20deg); }
+        .leaf-decoration:nth-child(2) { bottom: -30px; right: -40px; transform: rotate(30deg); animation-delay: 1.5s; }
+        .leaf-decoration:nth-child(3) { top: 20%; left: -50px; transform: rotate(-10deg); animation-delay: 0.5s; }
+        .leaf-decoration:nth-child(4) { bottom: 20%; right: -50px; transform: rotate(20deg); animation-delay: 2s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(var(--start-rotation, 0deg)); }
+            50% { transform: translateY(-25px) rotate(calc(var(--start-rotation, 0deg) + 15deg)); }
+        }
+
+        .background-leaves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        .background-leaves svg {
+            position: absolute;
+            animation: drift 10s infinite linear;
+            will-change: transform;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-leaves">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="#b7e4c7" style="top: 10%; left: 5%;">
+            <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+        </svg>
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="#dcedc1" style="bottom: 15%; right: 10%;">
+            <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+        </svg>
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="#a8e6cf" style="top: 30%; right: 20%;">
+            <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+        </svg>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2a9d8f" stroke-width="2" aria-hidden="true">
+                    <path d="M12 2L2 19h20L12 2z"/>
+                </svg>
+                Plant Nourishment AI
+            </h1>
+            <p>Your green companion for thriving plants</p>
+        </div>
+
+        <div class="form-group">
+            <label for="plant-name">Plant Name</label>
+            <input type="text" id="plant-name" placeholder="e.g., Fern" aria-describedby="plant-name-error">
+            <div id="plant-name-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="plant">Plant Category <span style="color: #ef4444">*</span></label>
+            <select id="plant" aria-describedby="plant-error" required>
+                <option value="">Select plant category</option>
+                <option value="creeper">Creeper</option>
+                <option value="bonsai">Bonsai</option>
+                <option value="shrub">Shrub</option>
+                <option value="tree">Tree</option>
+                <option value="succulent">Succulent</option>
+                <option value="herb">Herb</option>
+                <option value="fern">Fern</option>
+                <option value="cactus">Cactus</option>
+            </select>
+            <div id="plant-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="plant-type">Plant Type <span style="color: #ef4444">*</span></label>
+            <select id="plant-type" aria-describedby="plant-type-error" required>
+                <option value="">Select plant type</option>
+                <option value="indoor">Indoor</option>
+                <option value="outdoor">Outdoor</option>
+                <option value="greenhouse">Greenhouse</option>
+            </select>
+            <div id="plant-type-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="plant-age">Plant Age (months)</label>
+            <input type="number" id="plant-age" min="0" placeholder="e.g., 6" aria-describedby="plant-age-error">
+            <div id="plant-age-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="plant-environment">Current Environment <span style="color: #ef4444">*</span></label>
+            <select id="plant-environment" aria-describedby="plant-environment-error" required>
+                <option value="">Select environment</option>
+                <option value="indoor">Indoor</option>
+                <option value="outdoor">Outdoor</option>
+                <option value="greenhouse">Greenhouse</option>
+                <option value="balcony">Balcony</option>
+            </select>
+            <div id="plant-environment-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="soil-type">Soil Type <span style="color: #ef4444">*</span></label>
+            <select id="soil-type" aria-describedby="soil-type-error" required>
+                <option value="">Select soil type</option>
+                <option value="sandy">Sandy</option>
+                <option value="clay">Clay</option>
+                <option value="loam">Loam</option>
+                <option value="peat">Peat</option>
+                <option value="silt">Silt</option>
+            </select>
+            <div id="soil-type-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="light-level">Light Level <span style="color: #ef4444">*</span></label>
+            <select id="light-level" aria-describedby="light-level-error" required>
+                <option value="">Select light level</option>
+                <option value="low">Low (0-3 hours)</option>
+                <option value="medium">Medium (3-6 hours)</option>
+                <option value="high">High (6+ hours)</option>
+            </select>
+            <div id="light-level-error" class="error"></div>
+        </div>
+        <div class="form-group">
+            <label for="watering-frequency">Current Watering Frequency <span style="color: #ef4444">*</span></label>
+            <select id="watering-frequency" aria-describedby="watering-frequency-error" required>
+                <option value="">Select frequency</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="biweekly">Bi-weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+            <div id="watering-frequency-error" class="error"></div>
+        </div>
+        <button onclick="generateRecommendations()">Generate Care Plan</button>
+
+        <div id="recommendations">
+            <h2>Care Recommendations</h2>
+            <div id="watering" class="recommendation-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" aria-hidden="true">
+                    <path d="M12 19a6 6 0 0 0 6-6c0-4-6-11-6-11s-6 7-6 11a6 6 0 0 0 6 6z"/>
+                </svg>
+                <p><span>Watering:</span> <span id="watering-text"></span></p>
+            </div>
+            <div id="fertilizing" class="recommendation-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4caf50" aria-hidden="true">
+                    <path d="M12 2L2 19h20L12 2z"/>
+                </svg>
+                <p><span>Fertilizing:</span> <span id="fertilizing-text"></span></p>
+            </div>
+            <div id="sunlight" class="recommendation-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <p><span>Sunlight:</span> <span id="sunlight-text"></span></p>
+            </div>
+            <div id="health" class="recommendation-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                <p><span>Health Score:</span> <span id="health-text"></span></p>
+            </div>
+        </div>
+
+        <div class="leaf-decoration">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="#b7e4c7" opacity="0.4" aria-hidden="true">
+                <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+            </svg>
+        </div>
+        <div class="leaf-decoration">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="#b7e4c7" opacity="0.4" aria-hidden="true">
+                <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+            </svg>
+        </div>
+        <div class="leaf-decoration">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="#b7e4c7" opacity="0.4" aria-hidden="true">
+                <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+            </svg>
+        </div>
+        <div class="leaf-decoration">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="#b7e4c7" opacity="0.4" aria-hidden="true">
+                <path d="M12 2C6 2 2 12 12 22 22 12 18 2 12 2z"/>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        function generateRecommendations() {
+            const fields = [
+                { id: 'plant', label: 'Plant Category' },
+                { id: 'plant-type', label: 'Plant Type' },
+                { id: 'plant-environment', label: 'Current Environment' },
+                { id: 'soil-type', label: 'Soil Type' },
+                { id: 'light-level', label: 'Light Level' },
+                { id: 'watering-frequency', label: 'Watering Frequency' }
+            ];
+
+            // Reset errors
+            fields.forEach(field => {
+                const errorElement = document.getElementById(`${field.id}-error`);
+                errorElement.style.display = 'none';
+                errorElement.textContent = '';
+                document.getElementById(field.id).style.borderColor = '#b7e4c7';
+            });
+
+            // Validate inputs
+            let hasErrors = false;
+            fields.forEach(field => {
+                const value = document.getElementById(field.id).value;
+                if (!value) {
+                    const errorElement = document.getElementById(`${field.id}-error`);
+                    errorElement.textContent = `${field.label} is required`;
+                    errorElement.style.display = 'block';
+                    document.getElementById(field.id).style.borderColor = '#ef4444';
+                    hasErrors = true;
+                }
+            });
+
+            if (hasErrors) {
+                document.getElementById('recommendations').style.display = 'none';
+                return;
+            }
+
+            const plantName = document.getElementById('plant-name').value;
+            const plantCategory = document.getElementById('plant').value;
+            const plantType = document.getElementById('plant-type').value;
+            const plantAge = parseInt(document.getElementById('plant-age').value) || 0;
+            const environment = document.getElementById('plant-environment').value;
+            const soilType = document.getElementById('soil-type').value;
+            const lightLevel = document.getElementById('light-level').value;
+            const wateringFreq = document.getElementById('watering-frequency').value;
+
+            let watering = '';
+            let fertilizing = '';
+            let sunlight = '';
+            let healthScore = 80; // Base score reduced for more realistic adjustments
+
+            switch (plantCategory) {
+                case 'creeper':
+                    watering = 'Water every 5-7 days, 200-300ml';
+                    fertilizing = 'Fertilize monthly with Miracle-Gro All Purpose';
+                    sunlight = 'Provide 4-6 hours of partial sunlight';
+                    break;
+                case 'bonsai':
+                    watering = 'Water every 2-3 days, 50-100ml';
+                    fertilizing = 'Fertilize every 2 weeks with Bonsai Boy Liquid';
+                    sunlight = 'Provide 5-6 hours of direct sunlight';
+                    healthScore -= 5;
+                    break;
+                case 'shrub':
+                    watering = 'Water every 4-6 days, 300-400ml';
+                    fertilizing = 'Fertilize every 6 weeks with Osmocote Smart-Release';
+                    sunlight = 'Ensure 6-8 hours of sunlight';
+                    break;
+                case 'tree':
+                    watering = 'Water weekly, 500-700ml';
+                    fertilizing = 'Fertilize every 2 months with Jobe’s Tree Spikes';
+                    sunlight = 'Full sunlight 6-8 hours';
+                    break;
+                case 'succulent':
+                    watering = 'Water every 10-14 days, 50-100ml';
+                    fertilizing = 'Fertilize every 2 months with Schultz Cactus Plus';
+                    sunlight = 'Provide 6 hours of direct sunlight';
+                    break;
+                case 'herb':
+                    watering = 'Water every 3-5 days, 100-200ml';
+                    fertilizing = 'Fertilize monthly with Espoma Organic Herb Food';
+                    sunlight = 'Provide 4-6 hours of sunlight';
+                    break;
+                case 'fern':
+                    watering = 'Water every 4-6 days, 150-250ml';
+                    fertilizing = 'Fertilize every 6 weeks with Jack’s Classic All Purpose';
+                    sunlight = 'Provide 3-5 hours of indirect sunlight';
+                    break;
+                case 'cactus':
+                    watering = 'Water every 2-3 weeks, 30-80ml';
+                    fertilizing = 'Fertilize every 3 months with Grow More Cactus Juice';
+                    sunlight = 'Provide 6-8 hours of direct sunlight';
+                    break;
+                default:
+                    watering = 'Unknown plant category';
+                    fertilizing = 'Unknown plant category';
+                    sunlight = 'Unknown plant category';
+                    healthScore = 0;
+            }
+
+            if (plantType === 'indoor' && environment === 'indoor') {
+                watering += ' (reduce for indoor conditions)';
+                sunlight += ' (indirect light preferred)';
+                healthScore -= plantAge > 24 ? 5 : 0;
+            } else if (plantType === 'outdoor' && environment === 'outdoor') {
+                watering += ' (adjust for outdoor conditions)';
+                healthScore -= plantAge > 36 ? 7 : 0;
+            } else if (plantType === 'greenhouse' || environment === 'greenhouse') {
+                watering += ' (maintain consistent moisture)';
+                sunlight += ' (control with shading if needed)';
+                healthScore += 5;
+            } else {
+                watering += ' (mismatch: adjust care)';
+                sunlight += ' (mismatch: adjust exposure)';
+                healthScore -= 10;
+            }
+
+            switch (soilType) {
+                case 'sandy':
+                    watering += ' (increase frequency - drains quickly)';
+                    fertilizing += ' (increase amount - nutrients leach)';
+                    healthScore -= 3;
+                    break;
+                case 'clay':
+                    watering += ' (reduce frequency - retains water)';
+                    fertilizing += ' (use less - nutrients stay)';
+                    healthScore -= 3;
+                    break;
+                case 'loam':
+                    watering += ' (ideal drainage)';
+                    fertilizing += ' (standard amount - balanced)';
+                    healthScore += 5;
+                    break;
+                case 'peat':
+                    watering += ' (monitor - retains moisture)';
+                    fertilizing += ' (use acidic - peat is acidic)';
+                    break;
+                case 'silt':
+                    watering += ' (moderate - good retention)';
+                    fertilizing += ' (standard - holds nutrients well)';
+                    break;
+            }
+
+            switch (lightLevel) {
+                case 'low':
+                    sunlight += ' (increase light if possible)';
+                    healthScore -= 7;
+                    break;
+                case 'medium':
+                    sunlight += ' (adequate for most plants)';
+                    break;
+                case 'high':
+                    sunlight += ' (ideal for sun-loving plants)';
+                    healthScore += 5;
+                    break;
+            }
+
+            switch (wateringFreq) {
+                case 'daily':
+                    watering += ' (reduce if overwatering signs appear)';
+                    healthScore -= 5;
+                    break;
+                case 'weekly':
+                    watering += ' (standard for most)';
+                    break;
+                case 'biweekly':
+                    watering += ' (increase if soil dries out)';
+                    healthScore -= 3;
+                    break;
+                case 'monthly':
+                    watering += ' (increase - too infrequent)';
+                    healthScore -= 7;
+                    break;
+            }
+
+            if (plantAge > 12) {
+                fertilizing += ' (increase frequency for mature plants)';
+                healthScore += 3;
+            }
+            if (plantAge < 3) {
+                watering += ' (less water for young plants)';
+                healthScore -= 3;
+            }
+
+            document.getElementById('watering-text').textContent = watering;
+            document.getElementById('fertilizing-text').textContent = fertilizing;
+            document.getElementById('sunlight-text').textContent = sunlight;
+            document.getElementById('health-text').textContent = `${Math.max(0, healthScore)}%`;
+
+            const recommendations = document.getElementById('recommendations');
+            recommendations.style.display = 'block';
+            recommendations.classList.add('show');
+        }
+    </script>
+</body>
+</html>
